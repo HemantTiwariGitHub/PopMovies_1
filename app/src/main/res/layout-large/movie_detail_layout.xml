@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Movie Name Comes Here"
+        android:id="@+id/movie_name_title"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:shadowColor="#794949"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"
+        android:background="#20228a"
+        android:allowUndo="false"
+        android:textColor="#ffffff" />
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="180dp"
+        android:id="@+id/movie_poster_image"
+        android:layout_marginLeft="35dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="70dp"
+        android:layout_below="@+id/movie_name_title"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/releaseDate"
+        android:layout_alignTop="@+id/movie_poster_image"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="40dp"
+        android:layout_marginEnd="40dp"
+        android:text="2015" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/runTime"
+        android:text="120 mins"
+        android:layout_below="@+id/releaseDate"
+        android:layout_alignLeft="@+id/releaseDate"
+        android:layout_alignStart="@+id/releaseDate"
+        android:layout_marginTop="15dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="8.1/10"
+        android:id="@+id/rating"
+        android:textIsSelectable="false"
+        android:textSize="14sp"
+        android:layout_below="@+id/runTime"
+        android:layout_alignLeft="@+id/runTime"
+        android:layout_alignStart="@+id/runTime"
+        android:layout_marginTop="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="random text ajhdahdhksadjhksakds jshdsdsa"
+        android:id="@+id/plotsynopsis"
+        android:layout_below="@+id/movie_poster_image"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="94dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+
+</RelativeLayout>

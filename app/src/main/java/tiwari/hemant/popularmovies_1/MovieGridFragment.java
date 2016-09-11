@@ -7,17 +7,24 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.support.v7.widget.GridLayoutManager;
+import 	android.support.v7.widget.RecyclerView;
 
 
 public class MovieGridFragment extends Fragment {
 
 
     private OnMovieSelectedListener mListener;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MovieDataDownloaderTask downloaderTask = new MovieDataDownloaderTask();
+        downloaderTask.execute();
 
     }
 
@@ -25,7 +32,20 @@ public class MovieGridFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_movie_grid, container, false);
+        View MovieGridView = inflater.inflate(R.layout.fragment_movie_grid, container, false);
+
+        mRecyclerView = (RecyclerView) MovieGridView.findViewById(R.id.movie_recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+
+        mLayoutManager = new GridLayoutManager(this.getContext(),3);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mAdapter = new MovieGridAdapter(MovieDataDownloaderTask.getMovieDetailList(this.getActivity()));
+        mRecyclerView.setAdapter(mAdapter);
+
+
+
+        return MovieGridView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
