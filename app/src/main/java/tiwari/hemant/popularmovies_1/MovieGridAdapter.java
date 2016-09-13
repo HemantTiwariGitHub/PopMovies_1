@@ -15,27 +15,44 @@ import com.squareup.picasso.Picasso;
 public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHolder>{
 
     private ArrayList<MovieDetails> mMovieList;
+    private MovieItemClickListener mGridClickListener;
 
-    public static class MovieViewHolder extends RecyclerView.ViewHolder {
+
+    public  interface MovieItemClickListener {
+
+        void onItemClick(int pos);
+    }
+
+    public static class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public ImageView mImageView;
+        private MovieItemClickListener mClickListener;
 
 
-        public MovieViewHolder(View itemView) {
+        public MovieViewHolder(View itemView, MovieItemClickListener iClickListener) {
             super(itemView);
             mImageView = (ImageView)itemView.findViewById(R.id.imageView);
+            mClickListener = iClickListener;
+
+            mImageView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            mClickListener.onItemClick(getAdapterPosition());
         }
     }
 
-    MovieGridAdapter(ArrayList<MovieDetails> iMovieList)
+    MovieGridAdapter(ArrayList<MovieDetails> iMovieList, MovieItemClickListener iGridClickListener)
     {
         mMovieList = iMovieList;
+        mGridClickListener = iGridClickListener;
     }
 
     @Override
     public MovieGridAdapter.MovieViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View movieView = LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_item_grid, parent,false);
-        MovieViewHolder movieViewHolder = new MovieViewHolder(movieView);
+        MovieViewHolder movieViewHolder = new MovieViewHolder(movieView, mGridClickListener);
 
         return movieViewHolder;
     }

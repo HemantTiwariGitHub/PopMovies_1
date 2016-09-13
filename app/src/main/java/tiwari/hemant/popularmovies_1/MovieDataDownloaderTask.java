@@ -23,98 +23,48 @@ import android.content.Context;
 /**
  * Created by GoluMicku1 on 11-09-2016.
  */
-public class MovieDataDownloaderTask extends AsyncTask<Void, Void, Void> {
+public class MovieDataDownloaderTask extends AsyncTask<Void, Void, String> {
 
-    private final static String TAG = "PopM_DownloaderTask";
+    private final static String TAG = "PopM_" + MovieDataDownloaderTask.class.getSimpleName();
     private static ArrayList<MovieDetails> mMovieDetailsList = new ArrayList<MovieDetails>();
+    private AsyncCompletionCallback mCallBack;
+    private String MovieURL= "";
 
-    private static boolean TEST = false;
 
-    static ArrayList<MovieDetails>  getMovieDetailList(Context c)
+    public interface AsyncCompletionCallback
     {
-        if(TEST) {
-            try {
-                getMovieDataFromString(localTestStringReader(c));
-            }catch (Exception e)
-            {
-                Log.d(TAG, e.toString());
-            }
-        }
-        return mMovieDetailsList;
+        void onDownloadComplete();
     }
 
-    static String  localTestStringReader(Context c)
+    MovieDataDownloaderTask(AsyncCompletionCallback iCallBack)
     {
-        String data= c.getString(R.string.testData);
-
-        return data;
+        mCallBack = iCallBack;
+    }
+    static  ArrayList<MovieDetails> getMovieDetailList()
+    {
+        return  mMovieDetailsList;
     }
 
-   static void getMovieDataFromString(String str) throws JSONException
-    {
-        mMovieDetailsList.clear();
-        final String TAG_PAGE = "page";
-        final String TAG_RESULTS = "results";
-
-        final String TAG_TITLE = "title";
-        final String TAG_POSTER = "poster_path";
-
-        final String TAG_SYNOPSIS = "overview";
-        final String TAG_RELEASE = "release_date";
-
-        final String TAG_VOTE = "vote_average";
-
-        final String URI_PREPEND =  "http://image.tmdb.org/t/p/w185";
-
-
-        JSONObject response = new JSONObject(str);
-        JSONArray resultArray = response.getJSONArray(TAG_RESULTS);
-
-        for (int i = 0; i < resultArray.length(); i++)
-        {
-            JSONObject movieObj = resultArray.getJSONObject(i);
-
-            String title  =  movieObj.getString(TAG_TITLE);
-            String poster = movieObj.getString(TAG_POSTER);
-            String synopsis = movieObj.getString(TAG_SYNOPSIS);
-            String releaseDate =  movieObj.getString(TAG_RELEASE);
-            String vote = movieObj.getString(TAG_VOTE);
-            String DEF_RUNTIME = "120";
-
-            MovieDetails movieDetails =  new MovieDetails(title,DEF_RUNTIME,URI_PREPEND+poster, releaseDate, vote, synopsis);
-
-            Log.d(TAG, "Adding  :" + movieDetails.toString() );
-
-            mMovieDetailsList.add(movieDetails);
-
-
-        }
-
-
-
-
-
-
-    }
 
     @Override
-    protected Void doInBackground(Void... strings) {
+    protected void onPreExecute()
+    {
+        super.onPreExecute();
+
+    }
+
+
+    @Override
+    protected String doInBackground(Void... strings) {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String foreCasts[]=null;
 
-// Will contain the raw JSON response as a string.
         String forecastJsonStr = null;
 
         try {
-            // Construct the URL for the OpenWeatherMap query
-            // Possible parameters are available at OWM's forecast API page, at
-            // http://openweathermap.org/API#forecast
-            String urlStr = "https://api.themoviedb.org/3/movie/popular?api_key=";
 
-            Log.d(TAG, urlStr);
-
-            URL url = new URL(urlStr);
+            URL url = new URL(Utils.prepareMovieURL());
 
             // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -144,7 +94,7 @@ public class MovieDataDownloaderTask extends AsyncTask<Void, Void, Void> {
             }
             forecastJsonStr = buffer.toString();
             Log.d(TAG, forecastJsonStr);
-            getMovieDataFromString(forecastJsonStr);
+
 
         } catch (Exception e) {
             Log.e("PlaceholderFragment", "Error ", e);
@@ -167,6 +117,16 @@ public class MovieDataDownloaderTask extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
+    @Override
+    protected void onPostExecute(String movieData) {
+        super.onPostExecute(movieData);
+        try {
+            mMovieDetailsList = MovieDataParser.getMovieDataFromString(movieData);
+        }catch(JSONException e)
+        {
+            Log.e(TAG, e.toString());
+        }
+        mCallBack.onDownloadComplete();
 
-
+    }
 }

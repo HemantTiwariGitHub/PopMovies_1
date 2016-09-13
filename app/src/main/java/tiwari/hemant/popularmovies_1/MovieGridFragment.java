@@ -9,21 +9,32 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.GridLayoutManager;
 import 	android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
+public class MovieGridFragment extends Fragment implements MovieDataDownloaderTask.AsyncCompletionCallback{
 
-public class MovieGridFragment extends Fragment {
-
-
+    private static final String TAG = "PopM_GridFrag";
     private OnMovieSelectedListener mListener;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    MovieGridAdapter.MovieItemClickListener movieItemClickListener = new MovieGridAdapter.MovieItemClickListener() {
+        @Override
+        public void onItemClick(int pos) {
+            Log.d(TAG, "onItemClick" + pos );
+            if (mListener != null) {
+                Log.d(TAG, "onItemClick inside" + pos );
+                mListener.onMovieSelected(pos);
+            }
+        }
+    };
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MovieDataDownloaderTask downloaderTask = new MovieDataDownloaderTask();
+        MovieDataDownloaderTask downloaderTask = new MovieDataDownloaderTask(this);
         downloaderTask.execute();
 
     }
@@ -40,20 +51,15 @@ public class MovieGridFragment extends Fragment {
         mLayoutManager = new GridLayoutManager(this.getContext(),3);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new MovieGridAdapter(MovieDataDownloaderTask.getMovieDetailList(this.getActivity()));
+        mAdapter = new MovieGridAdapter(MovieDataDownloaderTask.getMovieDetailList(),movieItemClickListener);
         mRecyclerView.setAdapter(mAdapter);
+
 
 
 
         return MovieGridView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(int pos) {
-        if (mListener != null) {
-            mListener.onMovieSelected(pos);
-        }
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -70,6 +76,11 @@ public class MovieGridFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onDownloadComplete() {
+        mAdapter.notifyDataSetChanged();
     }
 
     /**
