@@ -29,16 +29,19 @@ public class MovieDataDownloaderTask extends AsyncTask<Void, Void, String> {
     private static ArrayList<MovieDetails> mMovieDetailsList = new ArrayList<MovieDetails>();
     private AsyncCompletionCallback mCallBack;
     private String MovieURL= "";
-
+    private Context mContext;
+    private static int mPage= 0;
 
     public interface AsyncCompletionCallback
     {
         void onDownloadComplete();
     }
 
-    MovieDataDownloaderTask(AsyncCompletionCallback iCallBack)
+    MovieDataDownloaderTask(AsyncCompletionCallback iCallBack, Context iContext)
     {
         mCallBack = iCallBack;
+        mContext = iContext;
+        mPage = mPage+1;
     }
     static  ArrayList<MovieDetails> getMovieDetailList()
     {
@@ -58,13 +61,12 @@ public class MovieDataDownloaderTask extends AsyncTask<Void, Void, String> {
     protected String doInBackground(Void... strings) {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
-        String foreCasts[]=null;
-
-        String forecastJsonStr = null;
+        String movieStr = null;
 
         try {
 
-            URL url = new URL(Utils.prepareMovieURL());
+            URL url = new URL(Utils.prepareMovieURL(mContext,mPage));
+            Log.d(TAG, url.toString());
 
             // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -76,7 +78,7 @@ public class MovieDataDownloaderTask extends AsyncTask<Void, Void, String> {
             StringBuffer buffer = new StringBuffer();
             if (inputStream == null) {
                 // Nothing to do.
-                forecastJsonStr = null;
+                movieStr = null;
             }
             reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -90,17 +92,18 @@ public class MovieDataDownloaderTask extends AsyncTask<Void, Void, String> {
 
             if (buffer.length() == 0) {
                 // Stream was empty.  No point in parsing.
-                forecastJsonStr = null;
+                movieStr = null;
             }
-            forecastJsonStr = buffer.toString();
-            Log.d(TAG, forecastJsonStr);
-
+            movieStr = buffer.toString();
+            Log.d(TAG, movieStr);
+           // mMovieDetailsList = MovieDataParser.getMovieDataFromString(movieStr);
+          // mCallBack.onDownloadComplete();
 
         } catch (Exception e) {
             Log.e("PlaceholderFragment", "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attempting
             // to parse it.
-            forecastJsonStr = null;
+            movieStr = null;
         } finally{
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -114,19 +117,28 @@ public class MovieDataDownloaderTask extends AsyncTask<Void, Void, String> {
             }
 
         }
-        return null;
+        return movieStr;
     }
 
     @Override
     protected void onPostExecute(String movieData) {
         super.onPostExecute(movieData);
+
         try {
-            mMovieDetailsList = MovieDataParser.getMovieDataFromString(movieData);
+            ArrayList<MovieDetails>  tempList = MovieDataParser.getMovieDataFromString(movieData);
+            for(MovieDetails tMD : tempList)
+            {
+                mMovieDetailsList.add(tMD);
+            }
+
+
         }catch(JSONException e)
         {
             Log.e(TAG, e.toString());
         }
+
         mCallBack.onDownloadComplete();
 
+        Log.d(TAG,"delta");
     }
 }

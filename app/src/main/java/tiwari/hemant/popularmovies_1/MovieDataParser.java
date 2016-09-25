@@ -28,6 +28,11 @@ public class MovieDataParser {
     static ArrayList<MovieDetails> getMovieDataFromString(String str) throws JSONException
     {
         ArrayList<MovieDetails> sMovieDetailsList = new ArrayList<MovieDetails>();
+        if(null == str)
+        {
+            return sMovieDetailsList;
+        }
+
         JSONObject response = new JSONObject(str);
         JSONArray resultArray = response.getJSONArray(TAG_RESULTS);
 

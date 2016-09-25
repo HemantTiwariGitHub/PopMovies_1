@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import java.util.ArrayList;
 import com.squareup.picasso.Picasso;
+import android.util.Log;
 
 /**
  * Created by GoluMicku1 on 11-09-2016.
@@ -16,6 +17,8 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
 
     private ArrayList<MovieDetails> mMovieList;
     private MovieItemClickListener mGridClickListener;
+    private final static String TAG = "PopM_" + MovieGridAdapter.class.getSimpleName();
+
 
 
     public  interface MovieItemClickListener {
@@ -45,12 +48,14 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
 
     MovieGridAdapter(ArrayList<MovieDetails> iMovieList, MovieItemClickListener iGridClickListener)
     {
+        Log.d(TAG, "Ctor");
         mMovieList = iMovieList;
         mGridClickListener = iGridClickListener;
     }
 
     @Override
     public MovieGridAdapter.MovieViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Log.d(TAG, "OnCreateViewHolder");
         View movieView = LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_item_grid, parent,false);
         MovieViewHolder movieViewHolder = new MovieViewHolder(movieView, mGridClickListener);
 
@@ -60,6 +65,7 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
 
+        Log.d(TAG, "onBindViewHolder"+position);
         String imagePath = mMovieList.get(position).getmPosterURI();
         Picasso.with(holder.mImageView.getContext()).load(imagePath).into(holder.mImageView);
 
@@ -69,5 +75,7 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
     public int getItemCount() {
         return  mMovieList.size();
     }
+
+
 
 }
